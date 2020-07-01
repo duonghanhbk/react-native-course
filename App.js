@@ -1,30 +1,52 @@
-import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import React, { useState } from "react";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Button,
+  TextInput,
+  ScrollView,
+  FlatList
+} from "react-native";
 
-import { NavigationContainer } from "@react-navigation/native";
-import { createStackNavigator } from "@react-navigation/stack";
-
-import HomeScreen from "./src/screens/HomeScreen";
-import DetailScreen from "./src/screens/Detail";
-
-const Stack = createStackNavigator();
+import GoalInput from "./components/GoalInput";
+import GoalItem from "./components/GoalItem";
 
 export default function App() {
+  const [courseGoal, setCourseGoal] = useState([]);
+
+  const addGoalHandler = enteredGoal => {
+    setCourseGoal(currentGoal => [
+      ...currentGoal,
+      { id: Math.random().toString(), value: enteredGoal }
+    ]);
+  };
+
+  const removeGoalHandler = goalId => {
+    setCourseGoal(currentGoal => {
+      return currentGoal.filter(goal => goal.id !== goalId);
+    });
+  };
+
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="Details" component={DetailScreen} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <View style={styles.screen}>
+      <GoalInput onAddGoal={addGoalHandler} />
+      <FlatList
+        data={courseGoal}
+        keyExtractor={(item, index) => item.id}
+        renderItem={itemData => (
+          <GoalItem
+            title={itemData.item.value}
+            id={itemData.item.id}
+            onDelete={removeGoalHandler}
+          />
+        )}
+      ></FlatList>
+    </View>
   );
 }
-after ad
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center"
+  screen: {
+    padding: 30
   }
 });
